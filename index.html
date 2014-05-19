@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>#codesthlm maps</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <style>
+      html, body, #map-canvas {
+        height: 100%;
+        margin: 0px;
+        padding: 0px
+      }
+    </style>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+    <script>
+function parseTitle(text) {
+  var pattern = /(@|at) ([\s\w]+)/;
+  var result = pattern.exec(text);
+
+  if (result) {
+    return result[2].replace(/https?$/, '').trim();
+  } else {
+    return 'Unknown location';
+  }
+}
+
+function statusHtml(status) {
+  var statusUrl = 'http://twitter.com/statuses/' + status.id_str;
+  var text = '<p>' + status.text + '</p>';
+  var link = '<p><a href="' + statusUrl + '">' + statusUrl + '</a>';
+
+  return text + link;
+}
+
+$(function() {
+  var mapOptions = {
+    zoom: 8,
+    center: new google.maps.LatLng(-34.397, 150.644)
+  };
+  var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+
+  $.getJSON('/tweets.json')
+    .done(function(data) {
+      var bounds = new google.maps.LatLngBounds();
+      var infowindow = new google.maps.InfoWindow();
+
+      $.each(data.statuses, function() {
+        var status = this;
+        var fiveHoursAgo = new Date(Date.now() - 5*60*60*1000);
+
+        if (status.geo && Date.parse(status.created_at) > fiveHoursAgo) {
+          var latLng = new google.maps.LatLng(
+            status.geo.coordinates[0],status.geo.coordinates[1]);
+          var title = parseTitle(status.text);
+          var marker = new google.maps.Marker({
+            position: latLng, map: map, title: title,
+            html: statusHtml(status)
+          });
+
+          bounds.extend(latLng);
+
+          google.maps.event.addListener(marker, 'click', function() {
+            infowindow.setContent(this.html);
+            infowindow.open(map, this);
+          });
+        }
+      });
+
+      map.setCenter(bounds.getCenter());
+      map.fitBounds(bounds); 
+    })
+    .fail(function(jqxhr, status, error) {
+      console.log(status + ': ' + error);
+    });
+});
+    </script>
+  </head>
+  <body>
+    <div id="map-canvas"></div>
+  </body>
+</html>
