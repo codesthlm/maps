@@ -1,5 +1,0 @@
-#!/bin/sh
-
-curl=/usr/local/bin/curl
-token=`$curl -s -X POST https://api.twitter.com/oauth2/token -u "$username:$password" -H 'Content-Type: application/x-www-form-urlencoded;charset=UTF-8' -d 'grant_type=client_credentials' | sed 's|.*access_token":"\(.*\)",".*|\1|'`
-$curl -s "https://api.twitter.com/1.1/search/tweets.json?q=%23codesthlm&count=100" -H "Authorization: Bearer $token" -A "codesthlm" > /var/www/maps.codesthlm.se/tweets.json
