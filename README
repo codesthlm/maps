@@ -1,0 +1,7 @@
+To deploy:
+
+    git remote add deploy git@maps.codesthlm.se:codesthlm-map.git
+    git push deploy master
+
+This requires access to the deploy server. Email code@codesthlm.se with
+your public SSH key for access; this email must be signed by your PGP key.
