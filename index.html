@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>#codesthlm maps</title>
+    <title>#codesthlm map</title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
@@ -93,5 +93,21 @@ $(function() {
   </head>
   <body>
     <div id="map"></div>
+    <noscript>
+      <p>This page is nothing more than a dynamically-generated map of
+      <a href="https://twitter.com/search?f=realtime&q=%23codesthlm">all
+        tweets with the hashtag <code>#codesthlm</code></a>.</p>
+      <p>Sadly, we do not have a non-JavaScript version of this page. If
+      you're looking for the hottest place to hack code in Stockholm
+      <em>right now</em>, we suggest <a
+        href="https://twitter.com/search?q=%23codesthlm">the Twitter
+        feed</a>.</p>
+      <p>However, even that might require JavaScript, and so for your
+      entertainment we invite you to parse <a
+        href="tweets.json">the JSON that drives the
+        map</a>.</p>
+      <p><a href="https://github.com/codesthlm/maps">Patches
+        welcome</a>.</p>
+    </noscript>
   </body>
 </html>
