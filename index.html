@@ -16,7 +16,7 @@
     <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
     <script>
 function parseTitle(text) {
-  var pattern = /(@|at) ([\s\w]+)/;
+  var pattern = /(@|at) ([\s\w\u00C0-\u024F]+)/;
   var result = pattern.exec(text);
 
   if (result) {
