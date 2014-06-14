@@ -4,15 +4,16 @@
     <title>#codesthlm maps</title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
     <style>
-      html, body, #map-canvas {
+      html, body, #map {
         height: 100%;
         margin: 0px;
         padding: 0px
       }
     </style>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+    <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
     <script>
 function parseTitle(text) {
   var pattern = /(@|at) ([\s\w]+)/;
@@ -34,41 +35,34 @@ function statusHtml(status) {
 }
 
 $(function() {
-  var mapOptions = {
-    zoom: 8,
-    center: new google.maps.LatLng(59.3433295, 18.0612691)
-  };
-  var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+  var map = new L.Map('map', {
+    center: new L.LatLng(59.3294, 18.0686),
+    zoom: 13
+  });
+
+  L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(map);
 
   $.getJSON('/tweets.json')
     .done(function(data) {
-      var bounds = new google.maps.LatLngBounds();
-      var infowindow = new google.maps.InfoWindow();
+      var fiveHoursAgo = new Date(Date.now() - 5*60*60*1000);
 
-      $.each(data.statuses, function() {
-        var status = this;
-        var fiveHoursAgo = new Date(Date.now() - 5*60*60*1000);
-
+      var latLngs = $.map(data.statuses, function(status) {
         if (status.geo && Date.parse(status.created_at) > fiveHoursAgo) {
-          var latLng = new google.maps.LatLng(
-            status.geo.coordinates[0],status.geo.coordinates[1]);
           var title = parseTitle(status.text);
-          var marker = new google.maps.Marker({
-            position: latLng, map: map, title: title,
-            html: statusHtml(status)
-          });
+          var marker = L.marker(status.geo.coordinates, {
+            title: title
+          }).addTo(map);
 
-          bounds.extend(latLng);
+          marker.bindPopup(statusHtml(status));
 
-          google.maps.event.addListener(marker, 'click', function() {
-            infowindow.setContent(this.html);
-            infowindow.open(map, this);
-          });
+          return marker.getLatLng();
         }
       });
 
-      map.setCenter(bounds.getCenter());
-      map.fitBounds(bounds); 
+      var bounds = new L.LatLngBounds(latLngs);
+      map.fitBounds(bounds);
     })
     .fail(function(jqxhr, status, error) {
       console.log(status + ': ' + error);
@@ -77,6 +71,6 @@ $(function() {
     </script>
   </head>
   <body>
-    <div id="map-canvas"></div>
+    <div id="map"></div>
   </body>
 </html>
