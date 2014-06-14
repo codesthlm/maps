@@ -38,12 +38,13 @@ function parseTitle(text) {
   }
 }
 
-function statusHtml(status) {
+function popupHtml(title, status) {
   var statusUrl = 'http://twitter.com/statuses/' + status.id_str;
+  var title = '<h2>' + title + '</h2>';
   var text = '<p>' + status.text + '</p>';
   var link = '<p><a href="' + statusUrl + '">' + statusUrl + '</a>';
 
-  return text + link;
+  return title + text + link;
 }
 
 $(function() {
@@ -67,7 +68,7 @@ $(function() {
             title: title
           }).addTo(map);
 
-          marker.bindPopup(statusHtml(status));
+          marker.bindPopup(popupHtml(title, status));
 
           return marker.getLatLng();
         }
